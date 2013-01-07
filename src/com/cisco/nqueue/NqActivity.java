@@ -9,6 +9,7 @@ import android.os.Bundle;
  * @author Xuan
  *
  */
+
 public class NqActivity extends Activity
 {
 	String ip;
