@@ -62,9 +62,10 @@
         
 	/>
 	<Button
-	    android:id="@+id/all_the_info"
+	    android:id="@+id/check_in_nfc"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
+	    android:text="check in nfc"
 	/>
 	<Button
 	    android:id="@+id/check_out"
@@ -72,12 +73,7 @@
 	    android:layout_height="wrap_content"
 	    android:text="check out" />
 
-	<Button
-	    android:id="@+id/quit"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:text="quit" />
-
+	
 	<Button
 	    android:id="@+id/check_rank"
 	    android:layout_width="fill_parent"

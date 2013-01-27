@@ -57,17 +57,17 @@ public class QueueList extends ListActivity{
  
 	}
 
-private class UpdateRequest extends AsyncTask<Integer, Void, ArrayList<String>>{
+/*private class UpdateRequest extends AsyncTask<Integer, Void, ArrayList<String>>{
 	
-	/**
+	*//**
 	 * args[0]:restaurant_id
 	 * args[1]:client_id
 	 * 
-	 * */
+	 * *//*
 	@Override
 	protected ArrayList<String> doInBackground(Integer... args) {
-		int restaurant_id = args[0];
-		int client_id = args[1];
+		String restaurant_id = args[0];
+		String client_id = args[1];
 		toServer.setClientId(client_id);
 		toServer.setRestaurantId(restaurant_id);
 		ArrayList<String> results= toServer.queryRank();
@@ -77,7 +77,7 @@ private class UpdateRequest extends AsyncTask<Integer, Void, ArrayList<String>>{
 	}
 	
 }
-
+*/
 
 
 /*

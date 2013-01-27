@@ -2,6 +2,9 @@ package com.cisco.nqueue;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
@@ -18,35 +21,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	
+
 	public static final int CHECK_IN_REQUEST = 1;
 	public static final int CHECK_OUT_REQUEST = 2;
-	public static final int QUIT_REQUEST = 3;
-	public static final int UPDATE_REQUEST = 4;
-	public static final int LIST_REQUEST = 5;
-	
-	
-	
+	public static final int UPDATE_REQUEST = 3;
+	public static final int CHECK_IN_NFC_REQUEST = 4;
+
 	private Database database;
-	
-	String webServerAddr_;
-	int client_id_;
-	int restaurant_id_;
+
+	String webServerAddr_ = "http://98.235.161.80:6666/";
+	String client_id_ = "none";
+	String restaurant_id_ = "50f1d13fcf7f130d7f0077d2";
 	String restaurant_name_;
-	
+
 	TextView addrText;
 	TextView phoneText;
 	TextView clientIdText;
 	TextView restaurantIdText;
 	TextView resultText;
-	
+
 	TalkToServer toServer;
-	
+
 	Button checkIn_button;
+	Button checkInNFC_button;
 	Button checkOut_button;
 	Button update_button;
-	Button quit_button;
-	Button list_button;   //retrieve all the checked_in info
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,315 +53,440 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		database = new Database(this);
 		toServer = new TalkToServer();
-		
-		addrText = (TextView)findViewById(R.id.address);
-		clientIdText = (TextView)findViewById(R.id.client_id);
-		restaurantIdText = (TextView)findViewById(R.id.restaurant_id);
-		phoneText = (TextView)findViewById(R.id.phone);
-		resultText = (TextView)findViewById(R.id.result);
-		
-		checkIn_button = (Button)findViewById(R.id.check_in);
-		checkOut_button = (Button)findViewById(R.id.check_out);
-		update_button = (Button)findViewById(R.id.check_rank);
-		quit_button = (Button)findViewById(R.id.quit);
-		list_button = (Button)findViewById(R.id.all_the_info);
-		
-		checkIn_button.setOnClickListener(new OnClickListener(){
+
+		//addrText = (TextView) findViewById(R.id.address);
+		//clientIdText = (TextView) findViewById(R.id.client_id);
+		//restaurantIdText = (TextView) findViewById(R.id.restaurant_id);
+		phoneText = (TextView) findViewById(R.id.phone);
+		resultText = (TextView) findViewById(R.id.result);
+
+		//list_button = (Button) findViewById(R.id.all_the_info);
+		//quit_button = (Button) findViewById(R.id.quit);
+		update_button = (Button) findViewById(R.id.check_rank);
+		checkOut_button = (Button) findViewById(R.id.check_out);
+		checkIn_button = (Button) findViewById(R.id.check_in);
+		checkInNFC_button = (Button) findViewById(R.id.check_in_nfc);
+
+		checkIn_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				new NetworkRequest().execute(CHECK_IN_REQUEST);
 			}
 		});
-		
-		checkOut_button.setOnClickListener(new OnClickListener(){
+
+		checkInNFC_button.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View arg0) {
-				Log.i("wocao", "in the button2");
-				new NetworkRequest().execute(CHECK_OUT_REQUEST);
-			}});
+				// TODO Auto-generated method stub
+				new NetworkRequest().execute(CHECK_IN_NFC_REQUEST);
+			}
+			
+		});
+			
 		
-		quit_button.setOnClickListener(new OnClickListener(){
+		checkOut_button.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v) {
-				new NetworkRequest().execute(QUIT_REQUEST);
+			public void onClick(View arg0) {
+				Log.i("button click", "check out");
+				new NetworkRequest().execute(CHECK_OUT_REQUEST);
 			}
 		});
+
 		
-		update_button.setOnClickListener(new OnClickListener(){
+
+		update_button.setOnClickListener(new OnClickListener() {  //query the new rank
 
 			@Override
 			public void onClick(View v) {
 				new NetworkRequest().execute(UPDATE_REQUEST);
-			}});
-		
-		list_button.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				//new NetworkRequest()
 			}
-			
 		});
-			
-		NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
 		
-		if (mNfcAdapter == null){
-			Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG).show();
+
+		NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+		if (mNfcAdapter == null) {
+			Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG)
+					.show();
 			finish();
 			return;
 		}
-		
+
 	}
-	
+
 	public void onResume() {
 		Log.i("+++onResume+++", "in the resume");
-	    super.onResume();
-	    Log.i("+++onResume+++", "after super resume");
-	    NdefMessage []msgs = null;
-	    Intent intent = this.getIntent();
-	    if (intent == null){
-	    	Log.i("+++onResume+++", "intent empty");
-	    	return;}
-	    String action = intent.getAction();
-	    Log.i("+++onResume+++", "action is "+action);
-	    
-	    //application is awakened by NFC tag
-	    if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) 
-	    {
-	    	Log.i("+++onResume+++", "intent not empty");
-	        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-	        if (rawMsgs != null) {
-	        	Log.i("+++onResume+++", "rawMsg not null");
-	            msgs = new NdefMessage[rawMsgs.length];
-	            for (int i = 0; i < rawMsgs.length; i++) {
-	                msgs[i] = (NdefMessage) rawMsgs[i];
-	            }
-	            processMsg(msgs[0]);
-	        }
-	     
-	    }
-	   }
-	
-	@Override
-	protected void onNewIntent (Intent intent){
-		 setIntent(intent); //guarantee before onResume is called, the intent is 
-		 					// the newest one.
-		 					// it would be call only when the activity is "singleTop"
-		 					// or the intent is some similar flag
+		super.onResume();
+		Log.i("+++onResume+++", "after super resume");
+		NdefMessage[] msgs = null;
+		Intent intent = this.getIntent();
+		if (intent == null) {
+			Log.i("+++onResume+++", "intent empty");
+			return;
+		}
+		String action = intent.getAction();
+		Log.i("+++onResume+++", "action is " + action);
+
+		// application is awakened by NFC tag
+		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+			Log.i("+++onResume+++", "intent not empty");
+			Parcelable[] rawMsgs = intent
+					.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			if (rawMsgs != null) {
+				Log.i("+++onResume+++", "rawMsg not null");
+				msgs = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					msgs[i] = (NdefMessage) rawMsgs[i];
+				}
+				processMsg(msgs[0]);
+			}
+
+		}
 	}
-	
-	
-	private class NetworkRequest extends AsyncTask<Integer, Void, ArrayList<String>>{
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		setIntent(intent); // guarantee before onResume is called, the intent is
+							// the newest one.
+							// it would be call only when the activity is
+							// "singleTop"
+							// or the intent is some similar flag
+	}
+
+	private class NetworkRequest extends
+			AsyncTask<Integer, Void, String> {
 		/**
-		 * The return result will be
-		 * used as parameter in the onPostExecute method automatically
+		 * The return result will be used as parameter in the onPostExecute
+		 * method automatically
+		 * 
+		 * the value returned in doInBackground is a jason formatted string
 		 * */
+		int request ;
 		@Override
-		protected ArrayList<String> doInBackground(Integer... args) {
+		protected String doInBackground(Integer... args) {
 			
-			//String address = addrText.getText().toString();
-			//String clientId = clientIdText.getText().toString();
-			//String restaurantId = restaurantIdText.getText().toString();
-			String phone = "123456";
-			ArrayList<String> results = null;	
-		    
-			if (args[0] == CHECK_IN_REQUEST){
+			String phone = "12345";
+			String results = null;
+			request = args[0];    // args[0] is the current request
+			if (request == CHECK_IN_REQUEST) {
 				Log.i("+++NetworkRequest+++", "check in");
 				toServer.set(webServerAddr_, restaurant_id_, phone);
 				results = toServer.check_in();
-				results.add(0, String.valueOf(CHECK_IN_REQUEST));
 				return results;
+				
+			} else if (request == CHECK_IN_NFC_REQUEST) {
+				Log.i("+++NetworkRequest+++", "physically go to restaurant");
+				toServer.set(webServerAddr_, restaurant_id_, phone);
+				toServer.setClientId(client_id_); // client_id_ is set when we scan the tag 
+				Record record = getRecord();
+				if (record == null)
+				{
+					Log.i("+++check_in_nfc+++", "can't check_in_nfc, don't check in before");
+					results = "{action:error}";
+					return results;
 				}
-			
-			else if (args[0] == CHECK_OUT_REQUEST){
-				Log.i("+++NetworkRequest+++", "check out");
-				toServer.setWebServer(webServerAddr_);
-				toServer.setClientId(client_id_);
+				toServer.setClientId(record.client_id);  //for debug
 				toServer.setRestaurantId(restaurant_id_);
-				results = toServer.check_out();
-				results.add(0, String.valueOf(CHECK_OUT_REQUEST));
+				Log.i("client id", record.client_id);
+				results = toServer.check_in_nfc();
 				return results;
+				
+			} else if (request == CHECK_OUT_REQUEST) {
+				Log.i("+++NetworkRequest+++", "check out");
+				Record record = getRecord();
+				if (record == null){
+					Log.i("can't check out", "not check in");
+					results = "{action:error}";
+					return results;
 				}
-			
-			else if (args[0] == UPDATE_REQUEST){
+				restaurant_id_ = record.restaurant_id;
+				client_id_ = record.client_id;
+				toServer.set(webServerAddr_, restaurant_id_, phone); //webServerAddr  is hardcoded
+				toServer.setClientId(client_id_);
+				results = toServer.check_out();
+				return results;
+			} else if (request == UPDATE_REQUEST) {   //query the new rank
 				Log.i("+++NetworkRequest+++", "update request");
+				toServer.set(webServerAddr_, restaurant_id_, phone);//webServerAddr is hardcoded
+				Record record = getRecord();
+				if (record == null){
+					Log.i("+++update request+++", "no check in before");
+					results = "{action:error}";
+					return results;
+				}
+				client_id_ = record.client_id;
+				restaurant_id_ = record.restaurant_id;
 				toServer.setClientId(client_id_);
 				toServer.setRestaurantId(restaurant_id_);
 				results = toServer.queryRank();
-				results.add(0,String.valueOf(UPDATE_REQUEST));
+				
 				return results;
-			}
-			else if (args[0] == QUIT_REQUEST){
-				Log.i("+++NetworkRequest+++", "quit request");
-				toServer.setClientId(client_id_);
-				toServer.setRestaurantId(restaurant_id_);
-				results = toServer.quit();
-				results.add(0, String.valueOf(QUIT_REQUEST));
-				return results;
-			}
-			//Log.i("result ", String.valueOf(result));
-			
+			} 
+			// Log.i("result ", String.valueOf(result));
 			return null;
 		}
-		
-		//update database and UI
+
+		// update database and UI
 		@Override
-		protected void onPostExecute(ArrayList<String> results) {
-			if (results == null){
+		protected void onPostExecute(String results) {
+			if (results == null) {
 				resultText.append("network request error, null");
+				Log.i("+++network error+++", "jason string is null");
 				return;
-				}
-			int request = Integer.parseInt(results.get(0));
-			
-			switch (request){
-			case CHECK_IN_REQUEST:
+			}
+			try{
+			switch (request) {
+			case CHECK_IN_REQUEST:   //done
 				checkInPost(results);
 				break;
-			case CHECK_OUT_REQUEST:
+			case CHECK_OUT_REQUEST:  //quit the queue
 				checkOutPost(results);
 				break;
-			case UPDATE_REQUEST:
+			case UPDATE_REQUEST:   //done, query if it can pop up
 				updatePost(results);
 				break;
-			case QUIT_REQUEST:
-				quitPost(results);
-				break;
-			case LIST_REQUEST:
-				listPost(results);
+			case CHECK_IN_NFC_REQUEST:  //done
+				checkInNFCPost(results);
 				break;
 			default:
 				break;
 			}
-			}
-		
+			}catch (Exception e){e.printStackTrace();}
+		}
+
 		/***
-		 * following methods handle the results from the web server.
-		 * update UI and database
+		 * following methods handle the results from the web server. update UI
+		 * and database
 		 * 
 		 ***/
-		
-		void checkInPost(ArrayList<String> results){
-			Log.i("+++check_in_post+++","");
-			int returnCode = Integer.parseInt(results.get(1));
-			Log.i("+++check_in_post+++","return code: "+returnCode);
-			
-			if (returnCode >= 0){ 	 //check in successfully, returnCode is the ClientId
-				int rank = Integer.parseInt(results.get(3));
-				Log.i("+++check_in_post+++","1");
-				insertRecord(restaurant_id_, returnCode, restaurant_name_,rank);
-				resultText.append("new record in database: \n");
-				resultText.append(restaurant_id_+" "+returnCode+
-						          " "+ restaurant_name_);
+
+		String parserJSON(String resultItem) {
+			String[] record = resultItem.substring(1, resultItem.length() - 1)
+					.split(":");
+			return record[1];
+		}
+
+		void checkInPost(String results) throws JSONException {
+			JSONObject jObject = null;
+			String action = "";
+			try {
+				jObject = new JSONObject(results);
+				action = jObject.getString("action");
+				} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				}
+			// check in fails
+			if (action.equals("") || action.contains("error")){
+				Log.i("+++checkInPost+++", "check in error");
+				// update UI here;
+				return ;
 			}
 			
-			else{
-				resultText.append("can't check in "+returnCode+"\n");
+			// handle check in success
+			String client_id = jObject.getString("client_id"); 
+			String restaurant_id = jObject.getString("restaurant_id");
+			String ETA = jObject.getString("eta");
+			String is_notified = jObject.getString("is_ready");
+			Log.i("json param client_id", client_id);
+			Log.i("json param rest_id", restaurant_id);
+			Log.i("json param eta", ETA);
+			Log.i("json param is_notified", is_notified);
+			
+			insertRecord(restaurant_id, client_id, is_notified);
+			
+		}
+
+		void checkOutPost(String results) throws JSONException {
+			JSONObject jObject = null;
+			String action = "";
+			try {
+				jObject = new JSONObject(results);
+				action = jObject.getString("action");
+				} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				}
+			// check out fails
+			if (action.equals("") || action.contains("error")){
+				Log.i("+++checkOutPost+++", "check out error");
+				// update UI here;
+				return ;
+			}
+			
+			// handle check out success
+			Log.i("+++check_out+++", action);
+			deleteRecord();
+		}
+
+		void updatePost(String results) throws JSONException {
+			Log.i("+++update_Post+++", "");
+			JSONObject jObject = null;
+			String action = "";
+			try {
+				jObject = new JSONObject(results);
+				action = jObject.getString("action");
+				} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 				}
 			
+			if (action.equals("") || action.contains("error")){
+				Log.i("+++updatePost+++", "update error");
+				// update UI here;
+				return ;
+			}
+			
+			// handle update success
+			String client_id = jObject.getString("client_id"); 
+			String restaurant_id = jObject.getString("restaurant_id");
+			String ETA = jObject.getString("eta");
+			String is_notified = jObject.getString("is_ready");
+			Log.i("json param client_id", client_id);
+			Log.i("json param rest_id", restaurant_id);
+			Log.i("json param eta", ETA);
+			Log.i("json param is_notified", is_notified);
+			
+			if (Boolean.getBoolean(is_notified)){
+				Log.i("+++on top +++", is_notified);
+			}
+			else{
+				Log.i("+++on top +++", is_notified);
+			}
 			
 		}
-		
-		void checkOutPost(ArrayList<String> results){
-			int returnCode = Integer.parseInt(results.get(1));
-			switch(returnCode){
-			case 1:
-				deleteRecord(restaurant_id_, client_id_);
-				resultText.append("delete records: \n");
-				resultText.append(restaurant_id_+" "+client_id_);
-				break;
-			default:
-				resultText.append("can't check out "+returnCode+"\n");
+
+	/*	void quitPost(ArrayList<String> results) {
+			if (parserJSON(results.get(1)) == "success") { // check in successfully,
+												// returnCode is
+				resultText
+						.append("Successfully check out, removed from the waiting queue for today\n");
+			} else {
+				resultText.append("Fail to check out, please try again!"
+						+ client_id_ + "\n");
 			}
 		}
-		
-		void updatePost(ArrayList<String> results){
+*/
+		void checkInNFCPost(String results) throws JSONException {
+			JSONObject jObject = null;
+			String action = "";
+			try {
+				jObject = new JSONObject(results);
+				action = jObject.getString("action");
+				} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				}
+			// check in fails
+			if (action.equals("") || action.equals("error")){
+				Log.i("+++checkInNFCPost+++", "check in nfc error");
+				// update UI here;
+				return ;
+			}
+			else if (action.equals("illegal")){
+				Log.i("+++checkInNFCPost+++", "not notified");
+				return;
+			}
 			
-		}
-		
-		void quitPost(ArrayList<String> results){
+			else if (action.equals("success")){
+				Log.i("+++checkInNFCPost+++", "out of the queue on the server side");
+				
+			}
 			
-		}
-		
-		void listPost(ArrayList<String> results){
-			
+			//insertRecord(restaurant_id, client_id, is_notified);
+			deleteRecord(restaurant_id_, client_id_);
+			// update UI below
 		}
 	}
-	
-	
+
 	/**
-	 * process msgs from the nfc tag  
+	 * process msgs from the nfc tag
+	 * 
 	 * @param msg
 	 */
-	public void processMsg(NdefMessage msg){
-		
-        //extract web server address and port from the message
-        webServerAddr_ = new String(msg.getRecords()[0].getPayload());
-        String restaurant_id_string = new String(msg.getRecords()[1].getPayload());
-        restaurant_name_ = new String(msg.getRecords()[2].getPayload());
-        
-        //restaurant_id_ and client_id_ are prepared for future use in NetworkRequest
-        restaurant_id_ = Integer.parseInt(restaurant_id_string);
-        
-        /*after get data from the NFC tag.
-         * according to local database, decide if it has checked in before.
-         * if yes, then it would be a check out operation.
-         * if not, it would be a check in operation
-        */
-        int checked_value = isChecked(restaurant_id_);
-        if (checked_value >= 0){
-        	client_id_ = checked_value;
-        	Log.i("+++ProcessMsg+++", "check_out_operation");
-        	resultText.append("check_out_operation");
-        	new NetworkRequest().execute(CHECK_OUT_REQUEST);
-        	
-        }
-        else{
-        	
-        	Log.i("+++ProcessMsg+++", "check_in_operation");
-        	resultText.append("check_in_operation");
-        	new NetworkRequest().execute(CHECK_IN_REQUEST);
-        }
-        
-      
-        resultText.append("tag infomation: \n"+
-        				  "server: "+webServerAddr_+"\n"+
-                          "restaurant id: "+restaurant_id_+"\n"+
-        				  "restaurant name: "+restaurant_name_+"\n");
-		
+	public void processMsg(NdefMessage msg) {
+
+		// extract web and restaurant information from the nfc message
+		webServerAddr_ = new String(msg.getRecords()[0].getPayload());
+		restaurant_id_ = new String(msg.getRecords()[1].getPayload());
+		restaurant_name_ = new String(msg.getRecords()[2].getPayload());
+
+		// restaurant_id_ and client_id_ are prepared for future use in
+		// NetworkRequest
+		// restaurant_id_ = 123 ;//Integer.parseInt(restaurant_id_string);
+
+		/*
+		 * after get data from the NFC tag. according to local database, decide
+		 * if it has checked in before. if yes, then it would be a check out
+		 * operation. if not, it would be a check in operation
+		 */
+		String checked_value = isChecked(restaurant_id_);
+		if (checked_value != "none") { // the restaurant information is already in the database
+			client_id_ = checked_value;
+			Log.i("+++ProcessMsg+++", "check_in_nfc_operation");
+			resultText.append("check_in_nfc_operation");
+			new NetworkRequest().execute(CHECK_IN_NFC_REQUEST);
+		} else {                     //the restaurant information is not in the database
+			Log.i("+++ProcessMsg+++", "check_in_operation");
+			resultText.append("check_in_operation");
+			new NetworkRequest().execute(CHECK_IN_REQUEST);
+		}
+		resultText.append("tag infomation: \n" + "server: " + webServerAddr_
+				+ "\n" + "restaurant id: " + restaurant_id_ + "\n"
+				+ "restaurant name: " + restaurant_name_ + "\n");
+
 	}
+
 	/**
 	 * check if the client has checked in the restaurant
+	 * 
 	 * @param restaurant_id
 	 * @return
 	 */
-	int isChecked(int restaurant_id){
+	String isChecked(String restaurant_id) {
 		database.open();
-		int result = database.isChecked(restaurant_id);
-		Log.i("+++top_database+++", "checked result: "+result);
+		String result = database.isChecked(restaurant_id);
+		Log.i("+++top_database+++", "checked result: " + result);
 		database.close();
 		return result;
 	}
-	
-	void insertRecord(int restaurant_id, int client_id, 
-					  String restaurant_name, int rank){
+	void insertRecord(String restaurant_id, String client_id, String is_notified){
 		database.open();
-		database.insert(restaurant_id, client_id, restaurant_name, rank);
+		database.insert(restaurant_id, client_id, is_notified);
 		database.close();
 	}
 	
-	void deleteRecord(int restaurant_id, int client_id){
+	Record getRecord(){
+		database.open();
+		Record record = database.getRecord();
+		database.close();
+		return record;
+	}
+	void insertRecord(String restaurant_id, String client_id,
+			String restaurant_name, String rank, String eta) {
+		database.open();
+		database.insert(restaurant_id, client_id, restaurant_name, rank, eta);
+		database.close();
+	}
+
+	void deleteRecord(String restaurant_id, String client_id) {
 		database.open();
 		database.delete(restaurant_id, client_id);
 		database.close();
 	}
-	
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
-	}*/
+//delete all the records in the database
+	void deleteRecord(){
+		database.open();
+		database.delete();
+		database.close();
+	}
+	/*
+	 * @Override public boolean onCreateOptionsMenu(Menu menu) { // Inflate the
+	 * menu; this adds items to the action bar if it is present.
+	 * getMenuInflater().inflate(R.menu.activity_main, menu); return true; }
+	 */
 
 }
