@@ -55,28 +55,7 @@ public class Polling extends Service{
 		pollingRequest.start();
 		
 	}
-		//new PollingRequest().execute(restaurant_id, client_id);
-		/*Runnable m_statusChecker = new Runnable()
-		{
-		     @Override 
-		     public void run() {
-		          updateStatus(); //this function can change value of m_interval.
-		          m_handler.postDelayed(m_statusChecker, m_interval);
-		     }
-		};
-
-		void startRepeatingTask()
-		{
-		    m_statusChecker.run(); 
-		}
-
-		void stopRepeatingTask()
-		{
-		    m_handler.removeCallbacks(m_statusChecker);
-		}
-	}
-	*/
-	class PollingRequest extends Thread{
+		class PollingRequest extends Thread{
 		@Override
 			public void run(){
 				String requestAddr = web_server+"/get_rank";
@@ -117,6 +96,9 @@ public class Polling extends Service{
 				
 				if (Boolean.getBoolean(is_notified)){
 					Log.i("+++polling+++", "should go to restaurant");
+					/***
+					 * do something here
+					 */
 					
 				}
 				else{
