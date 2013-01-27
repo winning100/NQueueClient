@@ -45,7 +45,7 @@ public class TalkToServer {
 			String phone) {
 		this.server_address = server_address;
 		this.restaurant_id = restaurant_id;
-		this.phone = phone;
+		//this.phone = phone;
 		this.client_id = "none";
 	}
 
@@ -131,7 +131,7 @@ public class TalkToServer {
 
 	String queryRank() {
 		// HttpPost httppost = new HttpPost(server_address+"/update_rank.php");
-		Log.i("real address", server_address + "/get_rank");
+		Log.i("real address", server_address + "get_rank");
 		List<NameValuePair> postData = new ArrayList<NameValuePair>(3);
 		postData.add(new BasicNameValuePair("client_id", String
 				.valueOf(client_id)));

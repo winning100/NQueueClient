@@ -36,6 +36,7 @@ public class Database {
 	 public void delete(){
 		 String query = "DELETE FROM "+DatabaseHelper.CHECK_IN_TABLE+"; ";
 		 database.execSQL(query);
+		 Log.i("+++database+++", "database cleared");
 	 }
 	 
 	 //insert client_id and restaurant_id and is_notified
@@ -50,7 +51,7 @@ public class Database {
 	 public void insert(String restaurant_id, String client_id, String restaurant_name, String rank, String eta){
 		 String query = "INSERT INTO "+DatabaseHelper.CHECK_IN_TABLE+" "+
 			 		"(restaurant_id, client_id, restaurant_name, rank, eta) Values "+
-			 		"( "+restaurant_id+" , "+client_id+" , "+"'"+restaurant_name+"'"+" , "+
+			 		"( '"+restaurant_id+"' , '"+client_id+"' , "+"'"+restaurant_name+"'"+" , "+
 			 		 rank+"," +
 			 		 "'"+eta+"'"+	
 			 		 " );";
@@ -85,6 +86,9 @@ public class Database {
 	 public Record getRecord( ){
 		 Cursor cursor = database.query(DatabaseHelper.CHECK_IN_TABLE, 
 				 						null, null, null, null, null, null);
+		 if (cursor == null){
+			 return null;
+		 }
 		 if (cursor.getCount() == 0)
 			 return null;
 		 cursor.moveToFirst();
@@ -102,7 +106,7 @@ public class Database {
 	 }
 	 
 	 public String isChecked(String restaurant_id){
-		 String where = "restaurant_id="+restaurant_id;
+		 String where = "restaurant_id='"+restaurant_id+"'";
 		 Cursor cursor = database.query(DatabaseHelper.CHECK_IN_TABLE, 
 				 						null, where, null, null, null, null);
 		 if (cursor.getCount() == 0)

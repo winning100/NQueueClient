@@ -146,7 +146,20 @@ public class MainActivity extends Activity {
 
 		}
 	}
-
+    void startPolling(){
+    	//Intent intent = new Intent(MainActivity.class, Polling.class);
+    	Log.i("++startPolling+++", "mainActvity");
+    	Intent intent = new Intent(this, Polling.class);
+    	Log.i("++startPolling+++", restaurant_id_);
+    	Log.i("++startPolling+++", client_id_);
+    	Log.i("++++", webServerAddr_);
+    	intent.putExtra("restaurant_id", restaurant_id_);
+    	
+    	intent.putExtra("client_id", client_id_);
+    	intent.putExtra("web_server", webServerAddr_);
+		startService(intent);
+		
+    }
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent); // guarantee before onResume is called, the intent is
@@ -263,12 +276,6 @@ public class MainActivity extends Activity {
 		 * 
 		 ***/
 
-		String parserJSON(String resultItem) {
-			String[] record = resultItem.substring(1, resultItem.length() - 1)
-					.split(":");
-			return record[1];
-		}
-
 		void checkInPost(String results) throws JSONException {
 			JSONObject jObject = null;
 			String action = "";
@@ -287,7 +294,9 @@ public class MainActivity extends Activity {
 			}
 			
 			// handle check in success
-			String client_id = jObject.getString("client_id"); 
+			
+			String client_id = jObject.getString("client_id");
+			client_id_ = client_id;
 			String restaurant_id = jObject.getString("restaurant_id");
 			String ETA = jObject.getString("eta");
 			String is_notified = jObject.getString("is_ready");
@@ -295,7 +304,8 @@ public class MainActivity extends Activity {
 			Log.i("json param rest_id", restaurant_id);
 			Log.i("json param eta", ETA);
 			Log.i("json param is_notified", is_notified);
-			
+			startPolling();
+			Log.i("+++service+++", "after start");
 			insertRecord(restaurant_id, client_id, is_notified);
 			
 		}
@@ -313,6 +323,7 @@ public class MainActivity extends Activity {
 			// check out fails
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++checkOutPost+++", "check out error");
+				deleteRecord();
 				// update UI here;
 				return ;
 			}

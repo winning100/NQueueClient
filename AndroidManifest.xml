@@ -39,7 +39,10 @@
             
         </activity>
         
-        
+        <service
+            android:name=".Polling"
+            android:label="Polling">
+            </service>
         <activity
             android:name = "com.cisco.nqueue.NqActivity"
             android:label = "@string/app_name" >
