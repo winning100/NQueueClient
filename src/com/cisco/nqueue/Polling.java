@@ -2,8 +2,14 @@ package com.cisco.nqueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -95,9 +101,27 @@ public class Polling extends Service{
 				
 				if (Boolean.getBoolean(is_notified)){
 					Log.i("+++polling+++", "should go to restaurant");
-					/***
-					 * update UI 
-					 */
+					
+					NotificationManager notifyManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+					Notification notify = new Notification(R.drawable.ic_launcher,"You're Next In Line!",System.currentTimeMillis());
+				
+					
+					/*// future intent to communicate with MainActivity 
+					Context context = getApplicationContext();
+					CharSequence contentTitle = "Notification Details...";
+					CharSequence contentText = "You're next in line! Please be ready to be seated";
+					
+					
+					Intent notifyIntent = new Intent();
+					PendingIntent intent = PendingIntent.getActivity(context, 0, notifyIntent, android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+					
+					notify.setLatestEventInfo(context, contentTitle, contentText, intent);
+					*/
+					
+					notifyManager.notify(1, notify);
+				
+				    
+				    
 					
 					return;
 					//stopSelf ();
