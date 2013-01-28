@@ -11,6 +11,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
@@ -34,9 +37,6 @@ public class MainActivity extends Activity {
 	String restaurant_id_ = "50f1d13fcf7f130d7f0077d2";
 	String restaurant_name_;
 
-	TextView addrText;
-	TextView phoneText;
-	TextView clientIdText;
 	TextView restaurantIdText;
 	TextView resultText;
 
@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		database = new Database(this);
@@ -56,8 +57,7 @@ public class MainActivity extends Activity {
 
 		//addrText = (TextView) findViewById(R.id.address);
 		//clientIdText = (TextView) findViewById(R.id.client_id);
-		//restaurantIdText = (TextView) findViewById(R.id.restaurant_id);
-		phoneText = (TextView) findViewById(R.id.phone);
+		restaurantIdText = (TextView) findViewById(R.id.restaurant_name);
 		resultText = (TextView) findViewById(R.id.result);
 
 		//list_button = (Button) findViewById(R.id.all_the_info);
@@ -147,6 +147,7 @@ public class MainActivity extends Activity {
 		}
 	}
     void startPolling(){
+    	
     	//Intent intent = new Intent(MainActivity.class, Polling.class);
     	Log.i("++startPolling+++", "mainActvity");
     	Intent intent = new Intent(this, Polling.class);
@@ -189,8 +190,8 @@ public class MainActivity extends Activity {
 		 * */
 		int request ;
 		@Override
-		protected String doInBackground(Integer... args) {
-			
+		protected String doInBackground(Integer... args) {			
+
 			String phone = "12345";
 			String results = null;
 			request = args[0];    // args[0] is the current request
@@ -255,6 +256,7 @@ public class MainActivity extends Activity {
 		// update database and UI
 		@Override
 		protected void onPostExecute(String results) {
+			
 			if (results == null) {
 				resultText.append("network request error, null");
 				Log.i("+++network error+++", "jason string is null");
@@ -299,10 +301,21 @@ public class MainActivity extends Activity {
 			// check in fails
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++checkInPost+++", "check in error");
-				/** update UI here;
-				 * 
-				 * 
-				 */
+				resultText.setText("Reservation failed");
+				
+			/*	// Possible future error checking //
+			if (action.equals(""))	{
+				Log.i("+++checkInPost+++", "No Action");
+				resultText.setText("Reservation failed \nNo Action");
+				}
+			else if (action.contains("error")){
+				Log.i("+++checkInPost+++", "action contains \"error\"");
+				resultText.setText("Reservation failed \nAction contains \"error\"");
+			}
+				else{
+				Log.i("+++checkInPost+++", "unknown check in error");
+				resultText.setText("Reservation failed \nUnkown Error");
+			}*/				
 				return ;
 			}
 			
@@ -318,10 +331,7 @@ public class MainActivity extends Activity {
 			Log.i("json param eta", ETA);
 			Log.i("json param is_notified", is_notified);
 			
-			/**
-			 * update UI here
-			 * 
-			 */
+			resultText.setText("Reservation successful!");
 			
 			startPolling();
 			Log.i("+++service+++", "after start");
@@ -343,12 +353,12 @@ public class MainActivity extends Activity {
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++checkOutPost+++", "check out error");
 				deleteRecord();
-				// update UI here;
+				resultText.setText("Could not cancel reservation. \nUnknown error");
 				return ;
 			}
 			
 			// handle check out success
-			//update UI here
+			resultText.setText("Successfully canceled reservation");
 			stopPolling();
 			Log.i("+++check_out+++", action);
 			deleteRecord();
@@ -368,7 +378,7 @@ public class MainActivity extends Activity {
 			
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++updatePost+++", "update error");
-				// update UI here; server error
+				resultText.setText("Could not retrieve update");
 				return ;
 			}
 			
@@ -382,13 +392,15 @@ public class MainActivity extends Activity {
 			Log.i("json param eta", ETA);
 			Log.i("json param is_notified", is_notified);
 			
+			
+			// ~~~~~~~~ Unsure why there's and if/else here ~~~~~~ ///
 			if (Boolean.getBoolean(is_notified)){
 				Log.i("+++on top +++", is_notified);
-				//update UI here
+				resultText.setText("Update successful");
 			}
 			else{
 				Log.i("+++on top +++", is_notified);
-				//update UI here
+				resultText.setText("Update unsuccessful");
 			}
 			
 		}
@@ -417,19 +429,19 @@ public class MainActivity extends Activity {
 			// check in nfc fails
 			if (action.equals("") || action.equals("error")){
 				Log.i("+++checkInNFCPost+++", "check in nfc error");
-				// update UI here;
+				resultText.setText("Check in Failed");
 				return ;
 			}
 			// check in nfc fails, not notified
 			else if (action.equals("illegal")){
 				Log.i("+++checkInNFCPost+++", "not notified");
-				//update UI here
+				resultText.setText("Check in Failed \nServer not notified");
 				return;
 			}
 			//successfully check in !
 			else if (action.equals("success")){
 				Log.i("+++checkInNFCPost+++", "out of the queue on the server side");
-				// update UI here
+				resultText.setText("Check in Successful!\nEnjoy your meal");
 				
 			}
 			
