@@ -99,7 +99,7 @@ public class Polling extends Service{
 					 * update UI 
 					 */
 					
-					return;
+					return; // the return statement is neccessary here
 					//stopSelf ();
 				}
 				else{

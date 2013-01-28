@@ -1,7 +1,5 @@
 package com.cisco.nqueue;
 
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,7 +11,7 @@ import android.os.Parcelable;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
-import android.view.Menu;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -257,7 +255,7 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(String results) {
 			if (results == null) {
 				resultText.append("network request error, null");
-				Log.i("+++network error+++", "jason string is null");
+				Log.i("+++network error+++", "json string is null");
 				return;
 			}
 			try{
