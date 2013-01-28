@@ -160,6 +160,16 @@ public class MainActivity extends Activity {
 		startService(intent);
 		
     }
+    
+    
+    void stopPolling(){
+    	String tag = "+++stopPolling+++";
+    	Log.i(tag, "before stop");
+    	Intent intent = new Intent(this, Polling.class);
+    	stopService(intent);
+    	
+    	
+    }
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent); // guarantee before onResume is called, the intent is
@@ -289,7 +299,10 @@ public class MainActivity extends Activity {
 			// check in fails
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++checkInPost+++", "check in error");
-				// update UI here;
+				/** update UI here;
+				 * 
+				 * 
+				 */
 				return ;
 			}
 			
@@ -304,6 +317,12 @@ public class MainActivity extends Activity {
 			Log.i("json param rest_id", restaurant_id);
 			Log.i("json param eta", ETA);
 			Log.i("json param is_notified", is_notified);
+			
+			/**
+			 * update UI here
+			 * 
+			 */
+			
 			startPolling();
 			Log.i("+++service+++", "after start");
 			insertRecord(restaurant_id, client_id, is_notified);
@@ -329,6 +348,8 @@ public class MainActivity extends Activity {
 			}
 			
 			// handle check out success
+			//update UI here
+			stopPolling();
 			Log.i("+++check_out+++", action);
 			deleteRecord();
 		}
@@ -347,7 +368,7 @@ public class MainActivity extends Activity {
 			
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++updatePost+++", "update error");
-				// update UI here;
+				// update UI here; server error
 				return ;
 			}
 			
@@ -363,9 +384,11 @@ public class MainActivity extends Activity {
 			
 			if (Boolean.getBoolean(is_notified)){
 				Log.i("+++on top +++", is_notified);
+				//update UI here
 			}
 			else{
 				Log.i("+++on top +++", is_notified);
+				//update UI here
 			}
 			
 		}
@@ -391,25 +414,28 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				}
-			// check in fails
+			// check in nfc fails
 			if (action.equals("") || action.equals("error")){
 				Log.i("+++checkInNFCPost+++", "check in nfc error");
 				// update UI here;
 				return ;
 			}
+			// check in nfc fails, not notified
 			else if (action.equals("illegal")){
 				Log.i("+++checkInNFCPost+++", "not notified");
+				//update UI here
 				return;
 			}
-			
+			//successfully check in !
 			else if (action.equals("success")){
 				Log.i("+++checkInNFCPost+++", "out of the queue on the server side");
+				// update UI here
 				
 			}
 			
 			//insertRecord(restaurant_id, client_id, is_notified);
 			deleteRecord(restaurant_id_, client_id_);
-			// update UI below
+			
 		}
 	}
 

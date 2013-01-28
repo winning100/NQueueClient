@@ -2,12 +2,8 @@ package com.cisco.nqueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -16,6 +12,9 @@ public class Polling extends Service{
 	String restaurant_id;
 	String web_server;
 	TalkToServer talkToServer;
+	public static final int INTERVAL = 3000;  //3 seconds 
+	
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -40,7 +39,7 @@ public class Polling extends Service{
 	
 	
 	void handleCommand(Intent intent){
-		Bundle extras = intent.getExtras();
+		//Bundle extras = intent.getExtras();
 		
 		client_id = intent.getStringExtra("client_id");
 		restaurant_id = intent.getStringExtra("restaurant_id");
@@ -58,7 +57,7 @@ public class Polling extends Service{
 		class PollingRequest extends Thread{
 		@Override
 			public void run(){
-				String requestAddr = web_server+"/get_rank";
+				//String requestAddr = web_server+"/get_rank";
 				JSONObject jObject = null;
 				String action = "";
 				talkToServer.setClientId(client_id);
@@ -97,15 +96,18 @@ public class Polling extends Service{
 				if (Boolean.getBoolean(is_notified)){
 					Log.i("+++polling+++", "should go to restaurant");
 					/***
-					 * do something here
+					 * update UI 
 					 */
 					
+					return;
+					//stopSelf ();
 				}
 				else{
 					Log.i("+++polling+++", "should not go to restaurant");
+					//no return statement here;
 				}
 				try {
-					Thread.sleep(3000);
+					Thread.sleep(INTERVAL);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
