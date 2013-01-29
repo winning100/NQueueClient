@@ -64,27 +64,7 @@ public class MainActivity extends Activity {
 		//quit_button = (Button) findViewById(R.id.quit);
 		update_button = (Button) findViewById(R.id.check_rank);
 		checkOut_button = (Button) findViewById(R.id.check_out);
-		checkIn_button = (Button) findViewById(R.id.check_in);
-		checkInNFC_button = (Button) findViewById(R.id.check_in_nfc);
-
-		checkIn_button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				new NetworkRequest().execute(CHECK_IN_REQUEST);
-			}
-		});
-
-		checkInNFC_button.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				new NetworkRequest().execute(CHECK_IN_NFC_REQUEST);
-			}
-			
-		});
-			
-		
+					
 		checkOut_button.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -302,7 +282,7 @@ public class MainActivity extends Activity {
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++checkInPost+++", "check in error");
 				resultText.setText("Reservation failed");
-				
+								
 			/*	// Possible future error checking //
 			if (action.equals(""))	{
 				Log.i("+++checkInPost+++", "No Action");
@@ -331,6 +311,7 @@ public class MainActivity extends Activity {
 			Log.i("json param eta", ETA);
 			Log.i("json param is_notified", is_notified);
 			
+			restaurantIdText.setText(restaurant_id);
 			resultText.setText("Reservation successful!");
 			
 			startPolling();
