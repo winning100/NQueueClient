@@ -1,49 +1,49 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
 
 <LinearLayout 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
-
+    android:orientation="vertical"
+    android:background="#990000">
+	
     <TextView
         android:id="@+id/restaurant_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Restaurant: "
+        android:text="Restaurant Name"
+        android:textAlignment="center"
+        android:textColor="#FFFF00"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/check_rank"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#CC0000"
+        android:text="update rank"
+        android:textSize="25dp"
+        android:textColor="#FFFF00" />
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:text="Welcome to NQueue"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="50dp" />
+
+    <Button
+        android:id="@+id/check_out"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#CC0000"
+        android:text="check out"
+        android:textColor="#FFFF00"
         android:textSize="25dp" />
-
-	<TextView
-	    android:id="@+id/result"
-	    android:layout_width="fill_parent"
-	    android:layout_height="230dp" />
-
-	<Button
-	    android:id="@+id/check_in_nfc"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:text="check in nfc"
-	/>
-	<Button
-	    android:id="@+id/check_out"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:text="check out" />
-
-	
-	<Button
-	    android:id="@+id/check_rank"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:text="update rank" />
-
-	<Button
-	    android:id="@+id/check_in"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:text="check in" />
     
 </LinearLayout>
 </ScrollView>
