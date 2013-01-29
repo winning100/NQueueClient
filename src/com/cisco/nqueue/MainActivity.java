@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 	String webServerAddr_ = "http://98.235.161.80:6666/";
 	String client_id_ = "none";
 	String restaurant_id_ = "50f1d13fcf7f130d7f0077d2";
-	String restaurant_name_;
+	String restaurant_name_ = "Canyon Pizza";
 
 	TextView restaurantIdText;
 	TextView resultText;
@@ -236,7 +236,7 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(String results) {
 			
 			if (results == null) {
-				resultText.append("network request error, null");
+				//resultText.append("network request error, null");
 				Log.i("+++network error+++", "json string is null");
 				return;
 			}
@@ -309,7 +309,7 @@ public class MainActivity extends Activity {
 			Log.i("json param eta", ETA);
 			Log.i("json param is_notified", is_notified);
 			
-			restaurantIdText.setText(restaurant_id);
+			restaurantIdText.setText(restaurant_name_);
 			resultText.setText("Reservation successful!");
 			
 			startPolling();
@@ -332,7 +332,7 @@ public class MainActivity extends Activity {
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++checkOutPost+++", "check out error");
 				deleteRecord();
-				resultText.setText("Could not cancel reservation. \nUnknown error");
+				resultText.setText("Check in first please.");
 				return ;
 			}
 			
@@ -357,7 +357,7 @@ public class MainActivity extends Activity {
 			
 			if (action.equals("") || action.contains("error")){
 				Log.i("+++updatePost+++", "update error");
-				resultText.setText("Could not retrieve update");
+				resultText.setText("Sorry, you have to check in first.");
 				return ;
 			}
 			
@@ -375,11 +375,14 @@ public class MainActivity extends Activity {
 			// ~~~~~~~~ Unsure why there's and if/else here ~~~~~~ ///
 			if (Boolean.getBoolean(is_notified)){
 				Log.i("+++on top +++", is_notified);
-				resultText.setText("Update successful");
+				resultText.setText("Your table is ready\n Please come to the restaurant and enjoy the meal!");
 			}
 			else{
 				Log.i("+++on top +++", is_notified);
-				resultText.setText("Update unsuccessful");
+				if (ETA == null || ETA.equals(""))
+					resultText.setText("Sorry, your meal is not ready\n");
+				else
+				resultText.setText("Sorry, your meal is not ready\n you should wait for another "+ETA+" minutes");
 			}
 			
 		}
@@ -414,7 +417,7 @@ public class MainActivity extends Activity {
 			// check in nfc fails, not notified
 			else if (action.equals("illegal")){
 				Log.i("+++checkInNFCPost+++", "not notified");
-				resultText.setText("Check in Failed \nServer not notified");
+				resultText.setText("Sorry, your table is not ready");
 				return;
 			}
 			//successfully check in !
@@ -455,16 +458,16 @@ public class MainActivity extends Activity {
 		if (checked_value != "none") { // the restaurant information is already in the database
 			client_id_ = checked_value;
 			Log.i("+++ProcessMsg+++", "check_in_nfc_operation");
-			resultText.append("check_in_nfc_operation");
+			resultText.append("\n checking in now, waiting...");
 			new NetworkRequest().execute(CHECK_IN_NFC_REQUEST);
 		} else {                     //the restaurant information is not in the database
 			Log.i("+++ProcessMsg+++", "check_in_operation");
-			resultText.append("check_in_operation");
+			resultText.append("\n checking in now, waiting...");
 			new NetworkRequest().execute(CHECK_IN_REQUEST);
 		}
-		resultText.append("tag infomation: \n" + "server: " + webServerAddr_
+		/*resultText.append("tag infomation: \n" + "server: " + webServerAddr_
 				+ "\n" + "restaurant id: " + restaurant_id_ + "\n"
-				+ "restaurant name: " + restaurant_name_ + "\n");
+				+ "restaurant name: " + restaurant_name_ + "\n");*/
 
 	}
 
