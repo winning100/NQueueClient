@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	
 	//sql for create restaurant_id and client_id 
 	private static final String CREATE_TABLE =" CREATE TABLE "+CHECK_IN_TABLE+
-			                                   " ("+ RESTAURANT_ID +" TEXT NOT NULL ,"+
+			                                   "  ("+ RESTAURANT_ID +" TEXT NOT NULL ,"+
 			                                         CLIENT_ID+" TEXT NOT NULL ,"+
 			                                         RANK+" int  ,"+
 			                                         RESTAURANT_NAME+" TEXT ,"+
