@@ -375,14 +375,14 @@ public class MainActivity extends Activity {
 			// ~~~~~~~~ Unsure why there's and if/else here ~~~~~~ ///
 			if (Boolean.getBoolean(is_notified)){
 				Log.i("+++on top +++", is_notified);
-				resultText.setText("Your table is ready\n Please come to the restaurant and enjoy the meal!");
+				resultText.setText("Your table is ready. Please check in!");
 			}
 			else{
 				Log.i("+++on top +++", is_notified);
 				if (ETA == null || ETA.equals(""))
-					resultText.setText("Sorry, your meal is not ready\n");
+					resultText.setText("Sorry, your meal is not ready");
 				else
-				resultText.setText("Sorry, your meal is not ready\n you should wait for another "+ETA+" minutes");
+				resultText.setText("Sorry, your meal is not ready. ETA is " + ETA + " minutes");
 			}
 			
 		}
@@ -423,7 +423,7 @@ public class MainActivity extends Activity {
 			//successfully check in !
 			else if (action.equals("success")){
 				Log.i("+++checkInNFCPost+++", "out of the queue on the server side");
-				resultText.setText("Check in Successful!\nEnjoy your meal");
+				resultText.setText("Check in Successful! Enjoy your meal");
 				
 			}
 			
@@ -458,11 +458,11 @@ public class MainActivity extends Activity {
 		if (checked_value != "none") { // the restaurant information is already in the database
 			client_id_ = checked_value;
 			Log.i("+++ProcessMsg+++", "check_in_nfc_operation");
-			resultText.append("\n checking in now, waiting...");
+			resultText.setText("Checking in now, waiting...");
 			new NetworkRequest().execute(CHECK_IN_NFC_REQUEST);
 		} else {                     //the restaurant information is not in the database
 			Log.i("+++ProcessMsg+++", "check_in_operation");
-			resultText.append("\n checking in now, waiting...");
+			resultText.setText("Checking in now, waiting...");
 			new NetworkRequest().execute(CHECK_IN_REQUEST);
 		}
 		/*resultText.append("tag infomation: \n" + "server: " + webServerAddr_
