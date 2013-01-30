@@ -9,9 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -27,6 +24,8 @@ public class MainActivity extends Activity {
 	public static final int CHECK_OUT_REQUEST = 2;
 	public static final int UPDATE_REQUEST = 3;
 	public static final int CHECK_IN_NFC_REQUEST = 4;
+	
+	public static final String POLLING_ACTION = "POLLING_ACTION";
 
 	private Database database;
 
@@ -69,6 +68,7 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				Log.i("button click", "check out");
 				new NetworkRequest().execute(CHECK_OUT_REQUEST);
+				//startPolling();// debug
 			}
 		});
 
@@ -123,6 +123,13 @@ public class MainActivity extends Activity {
 			}
 
 		}
+		
+		else if (action.equals(POLLING_ACTION)){
+			resultText.setText("Your table is ready. Please check in!");
+		}
+		
+		
+		
 	}
     void startPolling(){
     	

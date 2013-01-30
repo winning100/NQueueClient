@@ -13,7 +13,7 @@
         android:id="@+id/restaurant_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Restaurant Name"
+        android:text=""
         android:textAlignment="center"
         android:textColor="#FFFF00"
         android:textSize="30sp" />
@@ -23,14 +23,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="#CC0000"
-        android:text="update rank"
-        android:textSize="25dp"
-        android:textColor="#FFFF00" />
+        android:text="query status"
+        android:textColor="#FFFF00"
+        android:textSize="25dp" />
 
     <TextView
         android:id="@+id/result"
         android:layout_width="match_parent"
-        android:layout_height="330dp"
+        android:layout_height="533dp"
         android:text="Welcome to NQueue"
         android:textAlignment="center"
         android:textColor="@android:color/white"
